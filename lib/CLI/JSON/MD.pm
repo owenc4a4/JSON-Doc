@@ -19,11 +19,27 @@ sub _out {
     print $str;
 }
 
+sub _build_line {
+    my ($key, $value, $tab) = @_;
+    my $type = ref $value;
+    unless ($type) {
+        if ($value =~ /^\d+$/) {
+            $type = 'Int';
+        } else {
+            $type = 'Sring';
+        }
+    }
+
+
+    sprintf "%s%s%s: (%s)\n", " " x $tab, "* ", $key, $type;
+}
+
 sub _dump_data {
     my($self, $hash, $tab) = @_;
     for my $key(keys %$hash) {
         my $value = $hash->{$key};
-        _out(sprintf "%s%s%s\n", " " x $tab, "* ", $key);
+        my $str = _build_line($key, $value, $tab);
+        _out($str);
 
         if(ref $value eq 'HASH') {
             $self->_dump_data($hash->{$key}, $tab + 2);
